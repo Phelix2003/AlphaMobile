@@ -57,7 +57,7 @@ namespace AlphaMobile.Controllers.API
                         Name = item.Name,
                         Brand = item.Brand,
                         Image = image,
-                        ImageSource = "https://alpha-easio.azurewebsites.net/Menu/RenderItemPhoto?ItemId=4",
+                        ImageSource = AppConfiguration.ItemPictureRender_URI + "?ItemId=" + item.ItemId.ToString(),
                         UnitPrice = item.UnitPrice,
                         Description = item.Description,
                         HasSize = item.HasSize,
@@ -65,7 +65,8 @@ namespace AlphaMobile.Controllers.API
                         CanBeHotNotCold = item.CanBeHotNotCold,
                         CanBeSalt = item.CanBeSalt,
                         CanHaveMeat = item.CanHaveMeat,
-                        CanHaveSauce = item.CanHaveSauce
+                        CanHaveSauce = item.CanHaveSauce,
+                        TypeOfFood = item.TypeOfFood
                     });
                 }
                 return resto;

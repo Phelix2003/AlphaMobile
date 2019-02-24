@@ -36,6 +36,7 @@ namespace AlphaMobile.Models
         public string Description { get; set; }
         public string Brand { get; set; }
 
+        public TypeOfFood TypeOfFood { get; set; }
         public bool HasSize { get; set; }
         //public virtual List<SizedMeal> AvailableSizes { get; set; }
         public bool CanBeSalt { get; set; }
@@ -45,6 +46,16 @@ namespace AlphaMobile.Models
 
         public Image Image { get; set; }
         public string ImageSource { get; set; }
+    }
+
+    public enum TypeOfFood
+    {
+        Frites = 0,
+        Sauce = 1,
+        Snack = 2,
+        Meal = 3,
+        Menu = 4,
+        Boisson = 5
     }
 
 }

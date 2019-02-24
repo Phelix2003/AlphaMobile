@@ -5,12 +5,14 @@
     <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
         <Label x:Name="RestoName" Text="" />
         <Label x:Name="MenuName" Text=""/>
-        <ListView x:Name="listView">
+        <ListView x:Name="listView"
+                  IsGroupingEnabled="True"
+                  GroupDisplayBinding="{Binding Title}">
             <ListView.ItemTemplate>
-                <DataTemplate>                    
+                <DataTemplate>
                     <ImageCell Text="{Binding Name}" Detail="{Binding Description}" ImageSource="{Binding ImageSource}"/>
                 </DataTemplate>
-            </ListView.ItemTemplate>         
+            </ListView.ItemTemplate>
         </ListView>
         <Button Text="Refresh" Clicked="Button_Clicked"/>        
     </StackLayout>    

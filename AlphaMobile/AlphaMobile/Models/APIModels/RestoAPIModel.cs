@@ -32,7 +32,6 @@ namespace AlphaMobile.Models.APIModels
 
     public class ItemAPIModel
     {
-
         public int ItemId { get; set; }
         public string Name { get; set; }
 
@@ -40,6 +39,7 @@ namespace AlphaMobile.Models.APIModels
         public string Description { get; set; }
         public string Brand { get; set; }
 
+        public TypeOfFood TypeOfFood { get; set; }
         public bool HasSize { get; set; }
         //public virtual List<SizedMeal> AvailableSizes { get; set; }
         public bool CanBeSalt { get; set; }
