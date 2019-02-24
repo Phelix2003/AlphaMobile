@@ -11,7 +11,7 @@ namespace AlphaMobile
         {
             InitializeComponent();
 
-            MainPage = new MainPage();
+            MainPage = new RestaurantDetailsView();
         }
 
         protected override void OnStart()
