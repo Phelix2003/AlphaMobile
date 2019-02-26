@@ -48,9 +48,11 @@ namespace AlphaMobile
 
         private async void Button_Clicked(object sender, EventArgs e)
         {
+            await Navigation.PushModalAsync(new LoginPage());
             resto = await UpdtaeRestoFromCloud(2);
             if (resto != null)
             {
+               
                 RestoName.Text = resto.Name;
                 if (resto.Menu != null)
                 {
