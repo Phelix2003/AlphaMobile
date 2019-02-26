@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using AlphaMobile.Configuration;
 using Newtonsoft.Json;
 using AlphaMobile.Models.APIModels;
+using RestSharp;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -25,23 +26,30 @@ namespace AlphaMobile
 
         private async void Button_Clicked(object sender, EventArgs e)
         {
-            HttpClient client = new HttpClient();
-            string URL = AppConfiguration.APIServer_URI + "/token";
-            client.BaseAddress = new Uri(URL);
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json")); // Define the expected return format
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "relativeAddress");
+            HttpClient client = new HttpClient();
+            string url = AppConfiguration.CloudServer_URI + "/token";
+            client.BaseAddress = new Uri(url);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json")); // define the expected return format
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "/token");
             request.Content = new FormUrlEncodedContent(new[]
-{
+            {
                 new KeyValuePair<string, string>("grant_type", "password"),
                 new KeyValuePair<string, string>("username", Email.Text),
                 new KeyValuePair<string, string>("password", Password.Text)
             });
 
-            var json = await client.SendAsync(request);
-            if (json != null)
+            var response = await client.SendAsync(request);
+
+            if (response.StatusCode == HttpStatusCode.OK)
             {
-                JsonConvert.DeserializeObject<TokenRequestResponseAPIModel>(json.ToString());
+                TokenRequestResponseAPIModel tokenResponse = JsonConvert.DeserializeObject<TokenRequestResponseAPIModel>(await response.Content.ReadAsStringAsync());
+                Editorbox.Text = tokenResponse.access_token.ToString();
+            }
+            else
+            {
+                Editorbox.Text = "";
             }
             
 

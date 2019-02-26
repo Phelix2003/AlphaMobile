@@ -2,9 +2,10 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AlphaMobile.LoginPage">
-    <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
-        <Entry x:Name="Email" Keyboard="Email" Placeholder="Email"/>
-        <Entry x:Name="Password" IsPassword="True"/>
+    <StackLayout HorizontalOptions="Fill" VerticalOptions="CenterAndExpand" BackgroundColor="Azure">
+        <Entry x:Name="Email" Keyboard="Email" Placeholder="Email" HorizontalOptions="Fill"/>
+        <Entry x:Name="Password" IsPassword="True" HorizontalOptions="Fill"/>
         <Button Text="Login" Clicked="Button_Clicked"/>
+        <Editor x:Name="Editorbox" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" Text=""/>
     </StackLayout>
 </ContentPage>
