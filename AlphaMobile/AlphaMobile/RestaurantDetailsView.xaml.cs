@@ -15,6 +15,8 @@ namespace AlphaMobile
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class RestaurantDetailsView : ContentPage
 	{
+        App app = Application.Current as App;
+
         private CloudController _Cloud = new CloudController();
 
         private Restaurant resto;
@@ -22,6 +24,7 @@ namespace AlphaMobile
 
         private async Task<Restaurant> UpdtaeRestoFromCloud(int RestoId)
         {
+
             return await _Cloud.GetRestaurantDetailAsync(RestoId);
         }
         
@@ -34,7 +37,13 @@ namespace AlphaMobile
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            resto = await UpdtaeRestoFromCloud(2);
+            do
+            {
+                resto = await UpdtaeRestoFromCloud(2);
+                if (resto == null && app.OAuth_Token == "")
+                    await Navigation.PushModalAsync(new LoginPage());
+            } while (app.OAuth_Token == "");
+            
             if (resto != null)
             {
                 RestoName.Text = resto.Name;
@@ -43,6 +52,9 @@ namespace AlphaMobile
                     MenuName.Text = resto.Menu.Name;
                     listView.ItemsSource = GenerateItemGroupList(resto);
                 }
+            }else
+            {
+
             }
         }
 

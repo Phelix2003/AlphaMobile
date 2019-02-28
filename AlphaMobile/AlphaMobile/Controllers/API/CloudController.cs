@@ -11,16 +11,21 @@ using AlphaMobile.Models.APIModels;
 using AlphaMobile.Models;
 using Xamarin.Forms;
 using System.IO;
+using System.Net.Http.Headers;
+using System.Net;
 
 namespace AlphaMobile.Controllers.API
 {
     public class CloudController
     {
         private HttpClient _Client = new HttpClient();
+        App app = Application.Current as App;
 
         public async Task<Restaurant> GetRestaurantDetailAsync(int Id)
         {
             string requestURI = AppConfiguration.APIServer_URI + "/RestaurantAPI/" + Id.ToString();
+            _Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", app.OAuth_Token);
+            _Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             try
             {
                 var content = await _Client.GetStringAsync(requestURI);
@@ -45,7 +50,7 @@ namespace AlphaMobile.Controllers.API
                         ItemList = new List<Item>()
                     }
                 };
-                foreach(var item in restoAPIModel.Menu.ItemList)
+                foreach (var item in restoAPIModel.Menu.ItemList)
                 {
                     // converting imgae Bytre[] to Image 
                     Image image = new Image();
@@ -71,10 +76,19 @@ namespace AlphaMobile.Controllers.API
                 }
                 return resto;
             }
-            catch (Exception e)
+            catch (HttpRequestException e)
             {
-                Debug.WriteLine(e.Message);
-                return null;
+                if(e.Message.Contains("401"))
+                {
+                    // Authentication failed. 
+                    // OAuthToken has been depreciated. Need for a new one 
+                    app.OAuth_Token = "";                    
+                    return null;
+                }else
+                {
+                    // Connexion error
+                    return null;
+                }
             }
         }
     }

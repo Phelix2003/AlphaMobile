@@ -22,4 +22,10 @@ namespace AlphaMobile.Models.APIModels
         public string issued { get; set; }
         public string expires { get; set; }
     }
+
+    public class ErrorResponseAPIModel
+    {
+        public string error { get; set; }
+        public string error_description { get; set; }
+    }
 }

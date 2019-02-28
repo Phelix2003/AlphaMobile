@@ -19,13 +19,20 @@ namespace AlphaMobile
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class LoginPage : ContentPage
 	{
-		public LoginPage ()
+
+
+        public LoginPage ()
 		{
+    
+
 			InitializeComponent ();
-		}
+
+            BindingContext = Application.Current;
+        }
 
         private async void Button_Clicked(object sender, EventArgs e)
         {
+            var app = Application.Current as App;
 
             HttpClient client = new HttpClient();
             string url = AppConfiguration.CloudServer_URI + "/token";
@@ -36,8 +43,8 @@ namespace AlphaMobile
             request.Content = new FormUrlEncodedContent(new[]
             {
                 new KeyValuePair<string, string>("grant_type", "password"),
-                new KeyValuePair<string, string>("username", Email.Text),
-                new KeyValuePair<string, string>("password", Password.Text)
+                new KeyValuePair<string, string>("username", app.UserLogin ),
+                new KeyValuePair<string, string>("password", app.UserPW)
             });
 
             var response = await client.SendAsync(request);
@@ -45,10 +52,24 @@ namespace AlphaMobile
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 TokenRequestResponseAPIModel tokenResponse = JsonConvert.DeserializeObject<TokenRequestResponseAPIModel>(await response.Content.ReadAsStringAsync());
-                Editorbox.Text = tokenResponse.access_token.ToString();
+                app.OAuth_Token = tokenResponse.access_token;
+                app.OAuth_VilidityTime = tokenResponse.expires_in;
+                await DisplayAlert("Connexion", "Login / PW correct", "Ok");
+                await Navigation.PopModalAsync();                
             }
             else
             {
+                if(response.StatusCode== HttpStatusCode.BadRequest)
+                {
+
+                    ErrorResponseAPIModel errorDescription = JsonConvert.DeserializeObject<ErrorResponseAPIModel>(await response.Content.ReadAsStringAsync());
+                    await DisplayAlert("Erreur", errorDescription.error_description, "Ok");
+                    
+                }else
+                {
+                    await DisplayAlert("Oupps", "Connexion problem", "Ok");
+                    await Navigation.PopModalAsync();
+                }
                 Editorbox.Text = "";
             }
             
