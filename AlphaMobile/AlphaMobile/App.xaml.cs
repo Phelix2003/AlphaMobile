@@ -1,6 +1,7 @@
 ﻿using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using AlphaMobile.Views;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace AlphaMobile
@@ -79,7 +80,7 @@ namespace AlphaMobile
             app.OAuth_Token = "";
             
 
-            MainPage = new RestaurantDetailsView();
+            MainPage = new Page1();
         }
 
         protected override void OnStart()
