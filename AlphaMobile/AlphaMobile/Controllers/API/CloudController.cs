@@ -31,6 +31,7 @@ namespace AlphaMobile.Controllers.API
                 var content = await _Client.GetStringAsync(requestURI);
                 if (content == null)
                 {
+
                     return null;
                 }
                 RestoAPIModel restoAPIModel = JsonConvert.DeserializeObject<RestoAPIModel>(content);
