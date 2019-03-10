@@ -7,10 +7,14 @@ using AlphaMobile.Models.APIModels;
 namespace AlphaMobile.Models.APIModels
 {
 
-    public class RestoAPIModel
+    public class ListRestoAPIModel
     {
         public ResponseHeaderAPIModel ResponseHeader { get; set; }
+        public List<RestoAPIModel> Restos { get; set; }
+    }
 
+    public class RestoAPIModel
+    {
         public int Id { get; set; }
         public string Name { get; set; }
         public string PhoneNumber { get; set; }
@@ -32,6 +36,7 @@ namespace AlphaMobile.Models.APIModels
 
     public class ItemAPIModel
     {
+
         public int ItemId { get; set; }
         public string Name { get; set; }
 
@@ -46,12 +51,5 @@ namespace AlphaMobile.Models.APIModels
         public bool CanBeHotNotCold { get; set; }
         public bool CanHaveMeat { get; set; }
         public bool CanHaveSauce { get; set; }
-
-        public byte[] Image { get; set; }
     }
-
-
-
-
-
 }

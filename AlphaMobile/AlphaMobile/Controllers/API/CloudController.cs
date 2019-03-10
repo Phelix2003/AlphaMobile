@@ -23,46 +23,39 @@ namespace AlphaMobile.Controllers.API
 
         public async Task<Restaurant> GetRestaurantDetailAsync(int Id)
         {
-            string requestURI = AppConfiguration.APIServer_URI + "/RestaurantAPI/" + Id.ToString();
+            string requestURI = AppConfiguration.APIServer_URI + "/Restaurant/" + Id.ToString();
             _Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", app.OAuth_Token);
             _Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             try
             {
                 var content = await _Client.GetStringAsync(requestURI);
                 if (content == null)
-                {
-
                     return null;
-                }
-                RestoAPIModel restoAPIModel = JsonConvert.DeserializeObject<RestoAPIModel>(content);
+                ListRestoAPIModel restoAPIModel = JsonConvert.DeserializeObject<ListRestoAPIModel>(content);
+                if (restoAPIModel.Restos.Count == 0)
+                    return null;
 
                 Restaurant resto = new Restaurant
                 {
-                    Id = restoAPIModel.Id,
-                    Address = restoAPIModel.Address,
-                    Description = restoAPIModel.Description,
-                    Image = restoAPIModel.Image,
-                    Name = restoAPIModel.Name,
-                    PhoneNumber = restoAPIModel.PhoneNumber,
+                    Id = restoAPIModel.Restos[0].Id,
+                    Address = restoAPIModel.Restos[0].Address,
+                    Description = restoAPIModel.Restos[0].Description,
+                    Image = restoAPIModel.Restos[0].Image,
+                    Name = restoAPIModel.Restos[0].Name,
+                    PhoneNumber = restoAPIModel.Restos[0].PhoneNumber,
                     Menu = new Models.Menu
                     {
-                        MenuId = restoAPIModel.Menu.MenuId,
-                        Name = restoAPIModel.Menu.Name,
+                        MenuId = restoAPIModel.Restos[0].Menu.MenuId,
+                        Name = restoAPIModel.Restos[0].Menu.Name,
                         ItemList = new List<Item>()
                     }
                 };
-                foreach (var item in restoAPIModel.Menu.ItemList)
+                foreach (var item in restoAPIModel.Restos[0].Menu.ItemList)
                 {
-                    // converting imgae Bytre[] to Image 
-                    Image image = new Image();
-                    Stream stream = new MemoryStream(item.Image);
-                    image.Source = ImageSource.FromStream(() => { return stream; });
-
                     resto.Menu.ItemList.Add(new Item
                     {
                         Name = item.Name,
                         Brand = item.Brand,
-                        Image = image,
                         ImageSource = AppConfiguration.ItemPictureRender_URI + "?ItemId=" + item.ItemId.ToString(),
                         UnitPrice = item.UnitPrice,
                         Description = item.Description,
@@ -92,5 +85,70 @@ namespace AlphaMobile.Controllers.API
                 }
             }
         }
+
+        public async Task<List<Restaurant>> GetRestaurantListAsync()
+        {
+            string requestURI = AppConfiguration.APIServer_URI + "/RestaurantList/";
+            _Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", app.OAuth_Token);
+            _Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            try
+            {
+                var content = await _Client.GetStringAsync(requestURI);
+                if (content == null)
+                    return null;
+
+                ListRestoAPIModel restoAPIModel = JsonConvert.DeserializeObject<ListRestoAPIModel>(content);
+
+                if (restoAPIModel.Restos.Count == 0)
+                    return null;
+
+                List<Restaurant> restaurants = new List<Restaurant>();
+
+                foreach (var restoAPI in restoAPIModel.Restos)
+                {
+                    Restaurant resto = new Restaurant
+                    {
+                        Id = restoAPI.Id,
+                        Address = restoAPI.Address,
+                        Description = restoAPI.Description,
+                        Image = restoAPI.Image,
+                        Name = restoAPI.Name,
+                        PhoneNumber = restoAPI.PhoneNumber,
+                        Menu = new Models.Menu
+                        {
+                            MenuId = restoAPI.Menu.MenuId,
+                            Name = restoAPI.Menu.Name,
+                            ItemList = new List<Item>()
+                        }
+                    };
+                    foreach (var item in restoAPI.Menu.ItemList)
+                    {
+
+                        resto.Menu.ItemList.Add(new Item
+                        {
+                            Name = item.Name,
+                            Brand = item.Brand,
+                            ImageSource = AppConfiguration.ItemPictureRender_URI + "?ItemId=" + item.ItemId.ToString(),
+                            UnitPrice = item.UnitPrice,
+                            Description = item.Description,
+                            HasSize = item.HasSize,
+                            ItemId = item.ItemId,
+                            CanBeHotNotCold = item.CanBeHotNotCold,
+                            CanBeSalt = item.CanBeSalt,
+                            CanHaveMeat = item.CanHaveMeat,
+                            CanHaveSauce = item.CanHaveSauce,
+                            TypeOfFood = item.TypeOfFood
+                        });
+                    }
+                    restaurants.Add(resto);
+                }
+                return restaurants;
+            }
+            catch (HttpRequestException e)
+            {
+                return null;
+            }
+        }
+
     }
 }

@@ -17,8 +17,7 @@ namespace AlphaMobile.Views
 		{
 			InitializeComponent ();
             while (!CrossConnectivity.Current.IsConnected)
-                DisplayAlert("Connection","Oups impossible d'atteindre votre friterie. Vérifier votre connexion internet","Ok");
-            
+                DisplayAlert("Connection","Oups impossible d'atteindre votre friterie. Vérifier votre connexion internet","Ok");        
               
 
 		}

@@ -8,11 +8,32 @@ namespace AlphaMobile
 {
     public partial class App : Application
     {
+
         private const string UserLoginKey = "UserLogin";
         private const string UserPWKey = "UserPW";
+        private const string UserProfileKey = "UserProfile";
         private const string OAuth_TokenKey = "OAuthToken";
         private const string OAuth_VilidityTimeKey = "OAuthValidityTime";
+        private const string WelcomeCustomerWizzardDoneKey = "WelcomeCustomerWizzardDone";
 
+
+
+        public bool WelcomeCustomerWizzardDone
+        {
+            get
+            {
+                if (Properties.ContainsKey(WelcomeCustomerWizzardDoneKey))
+                    return (bool)Properties[WelcomeCustomerWizzardDoneKey];
+                return false;
+            }
+
+            set
+            {
+                Properties[WelcomeCustomerWizzardDoneKey] = value;
+
+            }
+                
+        }
         public string UserLogin
         {
             get
@@ -39,7 +60,19 @@ namespace AlphaMobile
                 Properties[UserPWKey] = value;
             }
         }
-
+        public string UserProfile
+        {
+            get
+            {
+                if (Properties.ContainsKey(UserProfileKey))
+                    return Properties[UserProfileKey].ToString();
+                return "";
+            }
+            set
+            {
+                Properties[UserProfileKey] = value;
+            }
+        }
         public string OAuth_Token
         {
             get
@@ -53,7 +86,6 @@ namespace AlphaMobile
                 Properties[OAuth_TokenKey] = value;
             }
         }
-
         public string OAuth_VilidityTime
         {
             get
@@ -71,16 +103,27 @@ namespace AlphaMobile
 
 
 
-
-
         public App()
         {
             var app = Application.Current as App;
             InitializeComponent();
             app.OAuth_Token = "";
             
-            
-            MainPage = new IntroPage();
+            if(UserProfile == "chef")
+            {
+                MainPage = new NavigationPage(new SelectUserProfilePage());
+            }
+            else
+            {
+                if (WelcomeCustomerWizzardDone)
+                {
+                    MainPage = new NavigationPage(new RestaurantListPage());
+                }
+                else
+                {
+                    MainPage = new NavigationPage(new WelcomeCustomerWizzardPages());
+                }
+            }
         }
 
         protected override void OnStart()
