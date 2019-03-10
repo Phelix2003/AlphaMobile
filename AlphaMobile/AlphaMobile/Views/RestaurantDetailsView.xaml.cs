@@ -10,7 +10,7 @@ using AlphaMobile.Controllers.API;
 using AlphaMobile.Models;
 using AlphaMobile.ModelViews;
 
-namespace AlphaMobile
+namespace AlphaMobile.Views
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class RestaurantDetailsView : ContentPage

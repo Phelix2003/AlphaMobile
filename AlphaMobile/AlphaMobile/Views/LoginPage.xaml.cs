@@ -9,12 +9,13 @@ using System.Net.Http.Headers;
 using AlphaMobile.Configuration;
 using Newtonsoft.Json;
 using AlphaMobile.Models.APIModels;
-using RestSharp;
+using AlphaMobile;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace AlphaMobile
+
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class LoginPage : ContentPage

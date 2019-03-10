@@ -79,8 +79,8 @@ namespace AlphaMobile
             InitializeComponent();
             app.OAuth_Token = "";
             
-
-            MainPage = new Page1();
+            
+            MainPage = new IntroPage();
         }
 
         protected override void OnStart()
