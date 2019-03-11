@@ -35,6 +35,58 @@ namespace AlphaMobile.Views
             {
                 await DisplayAlert("Erreur", "Il semble y avoir une problème de communication", "Ok");
             }
+
+            //Configure the first line for the tittle 
+            var label = new Label { Text = "A proximité", FontSize = 24 };
+            GridArea.Children.Add(label, 0, 0);
+            Grid.SetColumnSpan(label, 2);
+            GridArea.RowDefinitions.Add(new RowDefinition
+            {
+                Height = new GridLength(20, GridUnitType.Auto)
+            });
+
+            int line = 1;
+            int coloumn = 0;
+
+            // Configure the First line height
+            GridArea.RowDefinitions.Add(new RowDefinition
+            {
+                Height = new GridLength(100, GridUnitType.Auto)
+            });
+
+            foreach(var resto in restaurants)
+            {
+                // Création fiche restaurant
+                var layout = new StackLayout();
+                layout.BackgroundColor = Color.Beige;
+
+                layout.Children.Add(new Image
+                {
+                    Source = "http://lorempixel.com/500/250/food/" + resto.Id + "/"
+                });
+
+                layout.Children.Add(new Label { Text = resto.Name, FontAttributes = FontAttributes.Bold, FontSize = 20 });
+
+                layout.Children.Add(new Label { Text = resto.Description, FontSize = 14 });
+
+                GridArea.Children.Add(layout, coloumn, line);                
+                if(coloumn == 1)
+                {
+                    GridArea.RowDefinitions.Add(new RowDefinition
+                    {
+                        Height = new GridLength(1, GridUnitType.Auto)
+                    });
+                    line++;
+                    coloumn = 0;
+                }
+                else
+                {
+                    coloumn++;
+                }
+
+            }
+
+
         }
     }
 }

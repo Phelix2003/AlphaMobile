@@ -106,41 +106,46 @@ namespace AlphaMobile.Controllers.API
 
                 foreach (var restoAPI in restoAPIModel.Restos)
                 {
-                    Restaurant resto = new Restaurant
+                    if(restoAPI.Menu !=null)
                     {
-                        Id = restoAPI.Id,
-                        Address = restoAPI.Address,
-                        Description = restoAPI.Description,
-                        Image = restoAPI.Image,
-                        Name = restoAPI.Name,
-                        PhoneNumber = restoAPI.PhoneNumber,
-                        Menu = new Models.Menu
+                        Restaurant resto = new Restaurant
                         {
-                            MenuId = restoAPI.Menu.MenuId,
-                            Name = restoAPI.Menu.Name,
-                            ItemList = new List<Item>()
-                        }
-                    };
-                    foreach (var item in restoAPI.Menu.ItemList)
-                    {
+                            Id = restoAPI.Id,
+                            Address = restoAPI.Address,
+                            Description = restoAPI.Description,
+                            Image = restoAPI.Image,
+                            Name = restoAPI.Name,
+                            PhoneNumber = restoAPI.PhoneNumber,
+                            Menu = new Models.Menu
+                            {
+                                MenuId = restoAPI.Menu.MenuId,
+                                Name = restoAPI.Menu.Name,
+                                ItemList = new List<Item>()
+                            }
+                        };
+                        foreach (var item in restoAPI.Menu.ItemList)
+                        {
 
-                        resto.Menu.ItemList.Add(new Item
-                        {
-                            Name = item.Name,
-                            Brand = item.Brand,
-                            ImageSource = AppConfiguration.ItemPictureRender_URI + "?ItemId=" + item.ItemId.ToString(),
-                            UnitPrice = item.UnitPrice,
-                            Description = item.Description,
-                            HasSize = item.HasSize,
-                            ItemId = item.ItemId,
-                            CanBeHotNotCold = item.CanBeHotNotCold,
-                            CanBeSalt = item.CanBeSalt,
-                            CanHaveMeat = item.CanHaveMeat,
-                            CanHaveSauce = item.CanHaveSauce,
-                            TypeOfFood = item.TypeOfFood
-                        });
+                            resto.Menu.ItemList.Add(new Item
+                            {
+                                Name = item.Name,
+                                Brand = item.Brand,
+                                ImageSource = AppConfiguration.ItemPictureRender_URI + "?ItemId=" + item.ItemId.ToString(),
+                                UnitPrice = item.UnitPrice,
+                                Description = item.Description,
+                                HasSize = item.HasSize,
+                                ItemId = item.ItemId,
+                                CanBeHotNotCold = item.CanBeHotNotCold,
+                                CanBeSalt = item.CanBeSalt,
+                                CanHaveMeat = item.CanHaveMeat,
+                                CanHaveSauce = item.CanHaveSauce,
+                                TypeOfFood = item.TypeOfFood
+                            });
+                        }
+                        restaurants.Add(resto);
+
+
                     }
-                    restaurants.Add(resto);
                 }
                 return restaurants;
             }
