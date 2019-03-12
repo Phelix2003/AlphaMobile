@@ -4,9 +4,10 @@
              x:Class="AlphaMobile.Views.RestaurantListPage"
              Title="Restaurant List Page">
     <AbsoluteLayout>
+
         <Label Text="Liste des restaurants à proximité" BackgroundColor="Aqua"
                  AbsoluteLayout.LayoutBounds="0,0,1,40" AbsoluteLayout.LayoutFlags="WidthProportional"
-               HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"/>
+               HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" />
         <ScrollView Orientation="Vertical" AbsoluteLayout.LayoutBounds="0,40,1,800" AbsoluteLayout.LayoutFlags="WidthProportional"
               BackgroundColor="Beige">
             <Grid x:Name="GridArea" BackgroundColor="SeaGreen" Padding="30" ColumnSpacing="30" RowSpacing="30"/>

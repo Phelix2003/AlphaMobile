@@ -21,6 +21,47 @@ namespace AlphaMobile.Controllers.API
         private HttpClient _Client = new HttpClient();
         App app = Application.Current as App;
 
+        public async Task<bool> UpdateOAuthToken()
+        {            
+            string url = AppConfiguration.CloudServer_URI + "/token";
+            _Client.BaseAddress = new Uri(url);
+            _Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json")); // define the expected return format
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "/token");
+            request.Content = new FormUrlEncodedContent(new[]
+            {
+                new KeyValuePair<string, string>("grant_type", "password"),
+                new KeyValuePair<string, string>("username", app.UserLogin ),
+                new KeyValuePair<string, string>("password", app.UserPW)
+            });
+
+            var response = await _Client. SendAsync(request);
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                TokenRequestResponseAPIModel tokenResponse = JsonConvert.DeserializeObject<TokenRequestResponseAPIModel>(await response.Content.ReadAsStringAsync());
+                app.OAuth_Token = tokenResponse.access_token;
+                app.OAuth_VilidityTime = tokenResponse.expires_in;
+                return true;
+            }
+            else
+            {
+                if (response.StatusCode == HttpStatusCode.BadRequest)
+                {
+
+                    ErrorResponseAPIModel errorDescription = JsonConvert.DeserializeObject<ErrorResponseAPIModel>(await response.Content.ReadAsStringAsync());
+                    //await DisplayAlert("Erreur", errorDescription.error_description, "Ok"); TODO logger cette erreur
+                    return false;
+
+                }
+                else
+                {
+                    // Problème de connexion
+                    return false;
+                }                
+            }
+        }
+
         public async Task<Restaurant> GetRestaurantDetailAsync(int Id)
         {
             string requestURI = AppConfiguration.APIServer_URI + "/Restaurant/" + Id.ToString();

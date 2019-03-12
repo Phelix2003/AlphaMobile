@@ -2,6 +2,8 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using AlphaMobile.Views;
+using AlphaMobile.Controllers.API;
+
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace AlphaMobile
@@ -100,35 +102,27 @@ namespace AlphaMobile
             }
         }
 
+        private CloudController _cloudController = new CloudController();
 
+
+        App app = Application.Current as App;
+        
 
 
         public App()
         {
-            var app = Application.Current as App;
             InitializeComponent();
-            app.OAuth_Token = "";
-            
-            if(UserProfile == "chef")
-            {
-                MainPage = new NavigationPage(new SelectUserProfilePage());
-            }
-            else
-            {
-                if (WelcomeCustomerWizzardDone)
-                {
-                    MainPage = new NavigationPage(new RestaurantListPage());
-                }
-                else
-                {
-                    MainPage = new NavigationPage(new WelcomeCustomerWizzardPages());
-                }
-            }
+            //app.OAuth_Token = "";
+            MainPage = new NavigationPage(new LoginPage());
+
+
+
         }
 
-        protected override void OnStart()
+        protected override async void OnStart()
         {
             // Handle when your app starts
+
         }
 
         protected override void OnSleep()

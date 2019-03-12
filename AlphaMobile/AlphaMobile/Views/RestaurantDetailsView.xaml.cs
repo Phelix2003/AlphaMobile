@@ -19,7 +19,8 @@ namespace AlphaMobile.Views
 
         private CloudController _Cloud = new CloudController();
 
-        private Restaurant resto;
+        private Restaurant _resto;
+        private int _restoId;
 
 
         private async Task<Restaurant> UpdtaeRestoFromCloud(int RestoId)
@@ -29,9 +30,10 @@ namespace AlphaMobile.Views
         }
         
 
-		public RestaurantDetailsView ()
+		public RestaurantDetailsView (int RestoId)
 		{
 			InitializeComponent ();
+            _restoId = RestoId;
 
 		}
         protected override async void OnAppearing()
@@ -39,18 +41,18 @@ namespace AlphaMobile.Views
             base.OnAppearing();
             do
             {
-                resto = await UpdtaeRestoFromCloud(2);
-                if (resto == null && app.OAuth_Token == "")
+                _resto = await UpdtaeRestoFromCloud(_restoId);
+                if (_resto == null && app.OAuth_Token == "")
                     await Navigation.PushModalAsync(new LoginPage());
             } while (app.OAuth_Token == "");
             
-            if (resto != null)
+            if (_resto != null)
             {
-                RestoName.Text = resto.Name;
-                if (resto.Menu != null)
+                RestoName.Text = _resto.Name;
+                if (_resto.Menu != null)
                 {
-                    MenuName.Text = resto.Menu.Name;
-                    listView.ItemsSource = GenerateItemGroupList(resto);
+                    MenuName.Text = _resto.Menu.Name;
+                    listView.ItemsSource = GenerateItemGroupList(_resto);
                 }
             }else
             {
@@ -61,15 +63,15 @@ namespace AlphaMobile.Views
         private async void Button_Clicked(object sender, EventArgs e)
         {
             await Navigation.PushModalAsync(new LoginPage());
-            resto = await UpdtaeRestoFromCloud(2);
-            if (resto != null)
+            _resto = await UpdtaeRestoFromCloud(2);
+            if (_resto != null)
             {
                
-                RestoName.Text = resto.Name;
-                if (resto.Menu != null)
+                RestoName.Text = _resto.Name;
+                if (_resto.Menu != null)
                 {
-                    MenuName.Text = resto.Menu.Name;
-                    listView.ItemsSource = GenerateItemGroupList(resto);
+                    MenuName.Text = _resto.Menu.Name;
+                    listView.ItemsSource = GenerateItemGroupList(_resto);
                 }
             }
         }

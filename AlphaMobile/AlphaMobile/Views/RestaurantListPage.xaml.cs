@@ -51,23 +51,32 @@ namespace AlphaMobile.Views
             // Configure the First line height
             GridArea.RowDefinitions.Add(new RowDefinition
             {
-                Height = new GridLength(100, GridUnitType.Auto)
+                Height = new GridLength(1, GridUnitType.Auto)
             });
 
             foreach(var resto in restaurants)
             {
-                // Création fiche restaurant
+                // Création de la fiche restaurant
                 var layout = new StackLayout();
                 layout.BackgroundColor = Color.Beige;
-
+                // Ajout de l'image
                 layout.Children.Add(new Image
                 {
-                    Source = "http://lorempixel.com/500/250/food/" + resto.Id + "/"
+                    Source = "https://alpha-easio.azurewebsites.net/restaurant/RenderRestoPhoto?RestoId=" + resto.Id
                 });
-
+                // Titre du restaurant
                 layout.Children.Add(new Label { Text = resto.Name, FontAttributes = FontAttributes.Bold, FontSize = 20 });
-
+                
+                //Description du restaurant 
                 layout.Children.Add(new Label { Text = resto.Description, FontSize = 14 });
+                // Associe l'ID du restaurant à ce stack layout. Pour retrouver le restaurant quand on click dessus. 
+                layout.Children.Add(new Label { Text = resto.Id.ToString(), IsVisible = false });
+
+                // Ajout d'un GestureRecognizure sur le layout afin de capter les les clicks. 
+                var gesture = new TapGestureRecognizer();
+                // Association du click sur la fonction OnClickRestaurant
+                gesture.Tapped += OnClickRestaurant;
+                layout.GestureRecognizers.Add(gesture);
 
                 GridArea.Children.Add(layout, coloumn, line);                
                 if(coloumn == 1)
@@ -87,6 +96,17 @@ namespace AlphaMobile.Views
             }
 
 
+        }
+
+        private async void OnClickRestaurant(object sender, EventArgs e)
+        {
+            StackLayout layout = (StackLayout)sender;
+            // Récupère les élément constituant la stack Layout afin de retrouver l'Id du restaurant
+            var childrens = layout.Children;
+            var label = (Label)childrens.FirstOrDefault(r => r.IsVisible == false);
+
+
+            await Navigation.PushAsync(new RestaurantDetailsView(int.Parse(label.Text)));
         }
     }
 }
