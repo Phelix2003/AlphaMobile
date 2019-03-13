@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AlphaMobile.Views.RestaurantDetailsView">
     <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
-        <Label x:Name="RestoName" Text="" />
-        <Label x:Name="MenuName" Text=""/>
+        <Label x:Name="RestoName" Text="" FontSize="21" />
+        <Image x:Name="RestoImage"/>
         <ListView x:Name="listView"
+                  ItemSelected="ListView_ItemSelected"
                   IsGroupingEnabled="True"
                   GroupDisplayBinding="{Binding Title}">
             <ListView.ItemTemplate>
@@ -14,6 +15,5 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Button Text="Refresh" Clicked="Button_Clicked"/>        
     </StackLayout>    
 </ContentPage>

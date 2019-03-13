@@ -196,5 +196,29 @@ namespace AlphaMobile.Controllers.API
             }
         }
 
+        public async Task<OrderAPIModel> GetCustomerOrderAsync()
+        {
+
+            string requestURI = AppConfiguration.APIServer_URI + "/CustomerOrder/";
+            _Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", app.OAuth_Token);
+            _Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            try
+            {
+                var content = await _Client.GetStringAsync(requestURI);
+                if (content == null)
+                    return null;
+
+                OrderAPIModel orderAPI = JsonConvert.DeserializeObject<OrderAPIModel>(content);
+
+                if (orderAPI == null)
+                    return null;
+                return orderAPI;
+            }
+            catch (HttpRequestException e)
+            {
+                return null;
+            }
+        }
+
     }
 }

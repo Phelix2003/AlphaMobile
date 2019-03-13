@@ -54,16 +54,15 @@ namespace AlphaMobile.Views
                 Height = new GridLength(1, GridUnitType.Auto)
             });
 
-            foreach(var resto in restaurants)
+            foreach (var resto in restaurants)
             {
                 // Création de la fiche restaurant
                 var layout = new StackLayout();
                 layout.BackgroundColor = Color.Beige;
                 // Ajout de l'image
-                layout.Children.Add(new Image
-                {
-                    Source = "https://alpha-easio.azurewebsites.net/restaurant/RenderRestoPhoto?RestoId=" + resto.Id
-                });
+                Image image = new Image { Source = "https://alpha-easio.azurewebsites.net/restaurant/RenderRestoPhoto?RestoId=" + resto.Id };
+                layout.Children.Add(image);
+                //layout.SetBinding(StackLayout.IsVisibleProperty, new Binding(""));
                 // Titre du restaurant
                 layout.Children.Add(new Label { Text = resto.Name, FontAttributes = FontAttributes.Bold, FontSize = 20 });
                 

@@ -9,6 +9,7 @@ using Xamarin.Forms.Xaml;
 using AlphaMobile.Controllers.API;
 using AlphaMobile.Models;
 using AlphaMobile.ModelViews;
+using AlphaMobile.Models.APIModels;
 
 namespace AlphaMobile.Views
 {
@@ -21,6 +22,7 @@ namespace AlphaMobile.Views
 
         private Restaurant _resto;
         private int _restoId;
+        private OrderAPIModel _order;
 
 
         private async Task<Restaurant> UpdtaeRestoFromCloud(int RestoId)
@@ -41,17 +43,21 @@ namespace AlphaMobile.Views
             base.OnAppearing();
             do
             {
+                _order = await _Cloud.GetCustomerOrderAsync();
                 _resto = await UpdtaeRestoFromCloud(_restoId);
                 if (_resto == null && app.OAuth_Token == "")
                     await Navigation.PushModalAsync(new LoginPage());
             } while (app.OAuth_Token == "");
-            
+
+            var imageSource = new UriImageSource { Uri = new Uri("https://alpha-easio.azurewebsites.net/restaurant/RenderRestoPhoto?RestoId=" + _resto.Id), CachingEnabled = true};
+            RestoImage.Source = imageSource;
+
+
             if (_resto != null)
             {
                 RestoName.Text = _resto.Name;
                 if (_resto.Menu != null)
                 {
-                    MenuName.Text = _resto.Menu.Name;
                     listView.ItemsSource = GenerateItemGroupList(_resto);
                 }
             }else
@@ -60,25 +66,9 @@ namespace AlphaMobile.Views
             }
         }
 
-        private async void Button_Clicked(object sender, EventArgs e)
-        {
-            await Navigation.PushModalAsync(new LoginPage());
-            _resto = await UpdtaeRestoFromCloud(2);
-            if (_resto != null)
-            {
-               
-                RestoName.Text = _resto.Name;
-                if (_resto.Menu != null)
-                {
-                    MenuName.Text = _resto.Menu.Name;
-                    listView.ItemsSource = GenerateItemGroupList(_resto);
-                }
-            }
-        }
         
         private List<ItemGroup> GenerateItemGroupList(Restaurant resto)
-        {
-            MenuName.Text = resto.Menu.Name;
+        {            
             IEnumerable<Item> ListItem = resto.Menu.ItemList.Where(s => s.TypeOfFood == TypeOfFood.Frites).ToList();
             ItemGroup groupeFrites = new ItemGroup("Frites", "F");
             groupeFrites.AddRange(ListItem);
@@ -107,6 +97,13 @@ namespace AlphaMobile.Views
                         groupeBoissons,
                         groupeSauces
                     };
+        }
+
+        private void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        {
+            var item = e.SelectedItem as Item;
+
+
         }
     }
 }
