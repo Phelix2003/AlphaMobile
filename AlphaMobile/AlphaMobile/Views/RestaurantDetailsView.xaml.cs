@@ -22,7 +22,7 @@ namespace AlphaMobile.Views
 
         private Restaurant _resto;
         private int _restoId;
-        private OrderAPIModel _order;
+
 
 
         private async Task<Restaurant> UpdtaeRestoFromCloud(int RestoId)
@@ -41,9 +41,10 @@ namespace AlphaMobile.Views
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+            // TOdo optimize // correct the login methodes. 
             do
             {
-                _order = await _Cloud.GetCustomerOrderAsync();
+                app.order = await _Cloud.GetCustomerOrderAsync();
                 _resto = await UpdtaeRestoFromCloud(_restoId);
                 if (_resto == null && app.OAuth_Token == "")
                     await Navigation.PushModalAsync(new LoginPage());
@@ -51,8 +52,6 @@ namespace AlphaMobile.Views
 
             var imageSource = new UriImageSource { Uri = new Uri("https://alpha-easio.azurewebsites.net/restaurant/RenderRestoPhoto?RestoId=" + _resto.Id), CachingEnabled = true};
             RestoImage.Source = imageSource;
-
-
             if (_resto != null)
             {
                 RestoName.Text = _resto.Name;
@@ -99,9 +98,43 @@ namespace AlphaMobile.Views
                     };
         }
 
-        private void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        private async void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
             var item = e.SelectedItem as Item;
+
+            // This is to refresh the order in case of someone is also changing the order on the desktop version
+            app.order = await _Cloud.GetCustomerOrderAsync();
+
+            if(app.order != null)
+            {
+                // Check is there is a slot tima associated to this order.
+                if (app.order.OrderSlot == null)
+                {
+                    // Get the available slot tome for today. 
+                    await Navigation.PushAsync(new SlotTimeSelectionPage(_resto.Id));
+                }
+                else
+                {
+                    await Navigation.PushAsync(new ItemConfigurationPage());
+                }
+
+                bool response = await _Cloud.AddItemToCustomerOrder(new OrderedItemAPIModel
+                {
+                    ItemId = item.ItemId,
+                    Quantity = 1,
+                    SelectedHotNotCold = true,
+                    SelectedMeatId = null,
+                    SelectedSalt = true,
+                    SelectedSauceId = null,
+                    SelectedSize = MealSize.L
+                });
+
+            }
+            else
+            {
+                // Error No order for this user. 
+                await Navigation.PopAsync();
+            }
 
 
         }

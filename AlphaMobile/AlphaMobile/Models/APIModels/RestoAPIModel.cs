@@ -53,12 +53,16 @@ namespace AlphaMobile.Models.APIModels
         public bool CanHaveSauce { get; set; }
     }
 
-    public class OrderSlotAPIModel
+    public class OrderSlotAPI
     {
         public int OrderSlotId { get; set; }
 
         public DateTime OrderSlotTime { get; set; }
+
+        // To group the slot by openning time
+        public MealTime SlotGroup { get; set; }
     }
+
 
 
 }

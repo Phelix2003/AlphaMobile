@@ -29,11 +29,8 @@ namespace AlphaMobile
 
 
         public LoginPage ()
-		{
-    
-
+		{  
 			InitializeComponent ();
-
             BindingContext = Application.Current;
         }
 
@@ -61,8 +58,7 @@ namespace AlphaMobile
                 await Navigation.PopToRootAsync();
             }
             else
-            {
-                
+            {                
                 await DisplayAlert("Connexion", "Login / PW incorrecte", "Ok");
             }
         }

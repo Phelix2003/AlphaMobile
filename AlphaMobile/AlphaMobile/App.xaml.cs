@@ -3,6 +3,8 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using AlphaMobile.Views;
 using AlphaMobile.Controllers.API;
+using AlphaMobile.Models;
+using AlphaMobile.Models.APIModels;
 
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
@@ -10,7 +12,7 @@ namespace AlphaMobile
 {
     public partial class App : Application
     {
-
+        // APP configuration
         private const string UserLoginKey = "UserLogin";
         private const string UserPWKey = "UserPW";
         private const string UserProfileKey = "UserProfile";
@@ -18,8 +20,11 @@ namespace AlphaMobile
         private const string OAuth_VilidityTimeKey = "OAuthValidityTime";
         private const string WelcomeCustomerWizzardDoneKey = "WelcomeCustomerWizzardDone";
 
+        // Non saved objects 
+        public OrderAPIModel order;
 
 
+        // Memorized objects
         public bool WelcomeCustomerWizzardDone
         {
             get
@@ -114,9 +119,6 @@ namespace AlphaMobile
             InitializeComponent();
             //app.OAuth_Token = "";
             MainPage = new NavigationPage(new LoginPage());
-
-
-
         }
 
         protected override async void OnStart()

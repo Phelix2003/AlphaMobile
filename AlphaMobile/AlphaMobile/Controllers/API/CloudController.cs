@@ -220,5 +220,92 @@ namespace AlphaMobile.Controllers.API
             }
         }
 
+        public async Task<bool> AddItemToCustomerOrder(OrderedItemAPIModel OrderedItem)
+        {
+            string requestURI = AppConfiguration.APIServer_URI + "/AddItemToCutomerOrder/";
+            _Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", app.OAuth_Token);
+            HttpRequestMessage message = new HttpRequestMessage();
+
+            string json = JsonConvert.SerializeObject(OrderedItem);
+            var content = new StringContent(json, Encoding.UTF8,"application/json");
+            try
+            {
+                var response = await _Client.PostAsync(requestURI, content);
+                var resposneString = await response.Content.ReadAsStringAsync();
+                return true;
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
+        }
+
+        public async Task<List<OrderSlotAPI>> GetRestaurantSlotTime(int RestoId)
+        {
+            string requestURI = AppConfiguration.APIServer_URI + "/SlotTime/" + RestoId.ToString();
+            _Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", app.OAuth_Token);
+            _Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            try
+            {
+                var content = await _Client.GetStringAsync(requestURI);
+                if (content == null)
+                    return null;
+                List<OrderSlotAPI> slotTiemAPI = JsonConvert.DeserializeObject<List<OrderSlotAPI>>(content);
+                if (slotTiemAPI == null)
+                    return null;              
+                if (slotTiemAPI.Count == 0)
+                    return null;
+                return slotTiemAPI;
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.Message.Contains("401"))
+                {
+                    // Authentication failed. 
+                    // OAuthToken has been depreciated. Need for a new one 
+                    app.OAuth_Token = "";
+                    return null;
+                }
+                else
+                {
+                    // Connexion error
+                    return null;
+                }
+            }
+            catch(Exception e)
+            {
+                return null;
+            }
+
+
+        }
+
+        public async Task<bool> SetRestaurantSlotTime(int SlotId)
+        {
+            string requestURI = AppConfiguration.APIServer_URI + "/SlotTime/" + SlotId.ToString();
+            _Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", app.OAuth_Token);
+            //HttpRequestMessage message = new HttpRequestMessage();
+
+
+
+            //string json = JsonConvert.SerializeObject(OrderedItem);
+            var content = new StringContent("", Encoding.UTF8, "application/json");
+            try
+            {
+                var response = await _Client.PostAsync(requestURI, content);
+                var resposneString = await response.Content.ReadAsStringAsync();
+                return true;
+            }
+            catch (HttpRequestException e)
+            {
+
+                return false;
+
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
     }
 }

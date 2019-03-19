@@ -58,4 +58,13 @@ namespace AlphaMobile.Models
         Boisson = 5
     }
 
+    public enum MealTime
+    {
+        Breakfast = 0,
+        Lunch = 1,
+        Diner = 2
+    }
+
+
+
 }

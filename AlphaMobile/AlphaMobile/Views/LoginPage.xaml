@@ -1,19 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="AlphaMobile.LoginPage"
-             BackgroundColor="Black">
+             x:Class="AlphaMobile.LoginPage">
     <AbsoluteLayout>
-        <ActivityIndicator IsRunning="True"
-                           Color="White"
-                           AbsoluteLayout.LayoutBounds="0.5,0.5,100,100"
-                           AbsoluteLayout.LayoutFlags="SizeProportional"/>
         <StackLayout HorizontalOptions="Fill" 
                      VerticalOptions="CenterAndExpand" 
                      BackgroundColor="Azure" 
                      AbsoluteLayout.LayoutBounds="0,0,1,1"
                      AbsoluteLayout.LayoutFlags="All"
-                     IsVisible="False">
+                     IsVisible="True">
             <Entry Text="{Binding UserLogin}"  Keyboard="Email" Placeholder="Email" HorizontalOptions="Fill"/>
             <Entry Text="{Binding UserPW}" IsPassword="True" HorizontalOptions="Fill"/>
             <Button Text="Login" Clicked="Button_Clicked"/>

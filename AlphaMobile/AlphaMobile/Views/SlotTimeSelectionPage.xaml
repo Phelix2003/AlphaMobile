@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AlphaMobile.Views.SlotTimeSelectionPage"
+             Title="Sélectionner l'heure de votre commande">
+
+    <AbsoluteLayout>
+        <ScrollView Orientation="Vertical" AbsoluteLayout.LayoutBounds="0, 0,1,800" AbsoluteLayout.LayoutFlags="WidthProportional"
+              BackgroundColor="Beige">
+            <Grid x:Name="GridArea" BackgroundColor="SeaGreen" Padding="30" ColumnSpacing="30" RowSpacing="30"/>
+            
+        </ScrollView>
+    </AbsoluteLayout>
+
+</ContentPage>
