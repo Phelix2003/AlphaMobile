@@ -53,8 +53,8 @@ namespace AlphaMobile
 
             if (await _cloudController.UpdateOAuthToken())
             {
+                await app.SavePropertiesAsync();
                 app.MainPage = new NavigationPage(new RestaurantListPage());
-                //await DisplayAlert("Connexion", "Login / PW correct", "Ok");
                 await Navigation.PopToRootAsync();
             }
             else

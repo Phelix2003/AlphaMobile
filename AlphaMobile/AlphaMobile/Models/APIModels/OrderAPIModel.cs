@@ -10,6 +10,7 @@ namespace AlphaMobile.Models.APIModels
 
         public bool IsOrderCompleted { get; set; }
         public bool IsInProgress { get; set; }
+        public int OrderRestaurantId { get; set; }
 
         public OrderSlotAPI OrderSlot { get; set; }
         //public virtual Payment Payment { get; set; }

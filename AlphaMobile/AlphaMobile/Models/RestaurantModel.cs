@@ -45,7 +45,7 @@ namespace AlphaMobile.Models
         public bool CanHaveSauce { get; set; }
 
         public Image Image { get; set; }
-        public string ImageSource { get; set; }
+        public UriImageSource ImageSource { get; set; }
     }
 
     public enum TypeOfFood

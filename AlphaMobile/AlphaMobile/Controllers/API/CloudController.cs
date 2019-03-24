@@ -97,7 +97,7 @@ namespace AlphaMobile.Controllers.API
                     {
                         Name = item.Name,
                         Brand = item.Brand,
-                        ImageSource = AppConfiguration.ItemPictureRender_URI + "?ItemId=" + item.ItemId.ToString(),
+                        ImageSource = new UriImageSource { Uri = new Uri(AppConfiguration.ItemPictureRender_URI + "?ItemId=" + item.ItemId.ToString()), CachingEnabled = false, CacheValidity = TimeSpan.FromMinutes(30)},
                         UnitPrice = item.UnitPrice,
                         Description = item.Description,
                         HasSize = item.HasSize,
@@ -171,7 +171,7 @@ namespace AlphaMobile.Controllers.API
                             {
                                 Name = item.Name,
                                 Brand = item.Brand,
-                                ImageSource = AppConfiguration.ItemPictureRender_URI + "?ItemId=" + item.ItemId.ToString(),
+                                ImageSource = new UriImageSource { Uri = new Uri(AppConfiguration.ItemPictureRender_URI + "?ItemId=" + item.ItemId.ToString()), CachingEnabled = false, CacheValidity = TimeSpan.FromMinutes(30) },
                                 UnitPrice = item.UnitPrice,
                                 Description = item.Description,
                                 HasSize = item.HasSize,

@@ -1,0 +1,44 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using AlphaMobile.Models;
+
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+
+namespace AlphaMobile.Views
+{
+	[XamlCompilation(XamlCompilationOptions.Compile)]
+	public partial class ItemSelectListView : ContentView
+	{
+        public static readonly BindableProperty ItemListViewProperty=
+            BindableProperty.Create("ItemListView", typeof(IEnumerable<Item>), typeof(ItemSelectListView), default(Item));
+
+        public IEnumerable<Item> ItemListView
+        {
+            get { return (IEnumerable<Item>)GetValue(ItemListViewProperty); }
+            set { SetValue(ItemListViewProperty, value); }
+        }
+
+
+        public static readonly BindableProperty TitleLabelProperty =
+            BindableProperty.Create("TitleLabel", typeof(string), typeof(ItemSelectListView), default(string));
+
+        public string TitleLabel
+        {
+            get { return (string)GetValue(TitleLabelProperty); }
+            set { SetValue(TitleLabelProperty, value); }
+        }
+
+        public ItemSelectListView ()
+		{
+			InitializeComponent ();
+            ListView.SetBinding(ListView.ItemsSourceProperty, new Binding("ItemListView", source: this));
+            Title.SetBinding(Label.TextProperty, new Binding("TitleLabel", source: this));            
+
+        }
+    }
+}

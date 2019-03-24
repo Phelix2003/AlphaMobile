@@ -21,7 +21,9 @@ namespace AlphaMobile
         private const string WelcomeCustomerWizzardDoneKey = "WelcomeCustomerWizzardDone";
 
         // Non saved objects 
+        public Restaurant resto;
         public OrderAPIModel order;
+        public OrderedItem orderedItem;
 
 
         // Memorized objects
