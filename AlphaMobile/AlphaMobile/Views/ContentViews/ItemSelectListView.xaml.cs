@@ -33,12 +33,20 @@ namespace AlphaMobile.Views
             set { SetValue(TitleLabelProperty, value); }
         }
 
-        public ItemSelectListView ()
+        public event EventHandler<SelectedItemChangedEventArgs> ItemSelected;
+
+        public void NotifyItemSelected(object sender, SelectedItemChangedEventArgs e)
+        {            
+            ItemSelected(sender, e);
+        }
+
+            public ItemSelectListView ()
 		{
 			InitializeComponent ();
-            ListView.SetBinding(ListView.ItemsSourceProperty, new Binding("ItemListView", source: this));
-            Title.SetBinding(Label.TextProperty, new Binding("TitleLabel", source: this));            
-
+            ItemsListView.SetBinding(ListView.ItemsSourceProperty, new Binding("ItemListView", source: this));
+            Title.SetBinding(Label.TextProperty, new Binding("TitleLabel", source: this));
+            ItemsListView.ItemSelected += NotifyItemSelected;
+            ItemsListView.SetBinding(ListView.SelectedItemProperty, new Binding("ItemSelected", source: this));
         }
     }
 }

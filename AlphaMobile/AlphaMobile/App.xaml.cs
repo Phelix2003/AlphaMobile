@@ -22,7 +22,7 @@ namespace AlphaMobile
 
         // Non saved objects 
         public Restaurant resto;
-        public OrderAPIModel order;
+        public Order order;
         public OrderedItem orderedItem;
 
 

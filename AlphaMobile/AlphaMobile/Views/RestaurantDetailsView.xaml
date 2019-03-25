@@ -6,12 +6,24 @@
         <Label x:Name="RestoName" Text="" FontSize="21" />
         <Image x:Name="RestoImage"/>
         <ListView x:Name="listView"
-                  ItemSelected="ListView_ItemSelected"
+                  ItemTapped="ListView_ItemSelected"
                   IsGroupingEnabled="True"
-                  GroupDisplayBinding="{Binding Title}">
+                  GroupDisplayBinding="{Binding Title}"
+                  HasUnevenRows="True"
+                  BackgroundColor="White">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <ImageCell Text="{Binding Name}" Detail="{Binding Description}" ImageSource="{Binding ImageSource}"/>
+                    <ViewCell>
+                        <StackLayout Orientation="Horizontal" Padding="5" >
+                            <Image Source="{Binding ImageSource}"/>
+                            <StackLayout HorizontalOptions="StartAndExpand">
+                                <Label Text="{Binding NameWithQty}" FontSize="Large" FontAttributes="Bold"/>
+                                <Label Text="{Binding Description}" FontSize="Medium" TextColor="Gray" />
+                            </StackLayout>
+                            <ListView x:Name="PriceList" ItemsSource="{Binding Price}" HeightRequest="40" WidthRequest="100"/>
+                        </StackLayout>                        
+                    </ViewCell>
+                    <!--<ImageCell Text="{Binding Name}" Detail="{Binding Description}" ImageSource="{Binding ImageSource}"/>-->
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

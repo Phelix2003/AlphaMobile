@@ -19,6 +19,8 @@ namespace AlphaMobile.Models.APIModels
         public ICollection<OrderedItemAPIModel> OrderedItems { get; set; }
     }
 
+
+
     public class OrderedItemAPIModel
     {
         public int ItemId { get; set; }

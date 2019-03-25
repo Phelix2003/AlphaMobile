@@ -5,11 +5,11 @@
   <ContentView.Content>
         <StackLayout>
             <Label x:Name="Title" HorizontalOptions="Fill"/>
-            <ListView x:Name="ListView"
+            <ListView x:Name="ItemsListView"
                   IsGroupingEnabled="False">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <ImageCell Text="{Binding Name}" Detail="{Binding Description}" ImageSource="{Binding ImageSource}" Tapped="OnItemTapped"/>
+                        <ImageCell Text="{Binding Name}" Detail="{Binding Description}" ImageSource="{Binding ImageSource}"/>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

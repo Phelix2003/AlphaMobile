@@ -97,7 +97,7 @@ namespace AlphaMobile.Controllers.API
                     {
                         Name = item.Name,
                         Brand = item.Brand,
-                        ImageSource = new UriImageSource { Uri = new Uri(AppConfiguration.ItemPictureRender_URI + "?ItemId=" + item.ItemId.ToString()), CachingEnabled = false, CacheValidity = TimeSpan.FromMinutes(30)},
+                        ImageSource = new UriImageSource { Uri = new Uri(AppConfiguration.ItemPictureRender_URI + "?ItemId=" + item.ItemId.ToString()), CachingEnabled = true, CacheValidity = TimeSpan.FromMinutes(30) },
                         UnitPrice = item.UnitPrice,
                         Description = item.Description,
                         HasSize = item.HasSize,
@@ -106,7 +106,8 @@ namespace AlphaMobile.Controllers.API
                         CanBeSalt = item.CanBeSalt,
                         CanHaveMeat = item.CanHaveMeat,
                         CanHaveSauce = item.CanHaveSauce,
-                        TypeOfFood = item.TypeOfFood
+                        TypeOfFood = item.TypeOfFood,
+                        AvailableSizes = item.AvailableSizes
                     });
                 }
                 return resto;
@@ -196,7 +197,7 @@ namespace AlphaMobile.Controllers.API
             }
         }
 
-        public async Task<OrderAPIModel> GetCustomerOrderAsync()
+        public async Task<Order> GetCustomerOrderAsync()
         {
 
             string requestURI = AppConfiguration.APIServer_URI + "/CustomerOrder/";
@@ -212,7 +213,43 @@ namespace AlphaMobile.Controllers.API
 
                 if (orderAPI == null)
                     return null;
-                return orderAPI;
+                Order resultOrder = new Order
+                {
+                    Id = orderAPI.Id,
+                    IsInProgress = orderAPI.IsInProgress,
+                    IsOrderCompleted = orderAPI.IsOrderCompleted,
+                    OrderRestaurantId = orderAPI.OrderRestaurantId,
+                    OrderedItems = new List<OrderedItem>()
+                };
+
+                if(orderAPI.OrderSlot != null)
+                {
+                    resultOrder.OrderSlot = new OrderSlot
+                    {
+                        OrderSlotId = orderAPI.OrderSlot.OrderSlotId,
+                        OrderSlotTime = orderAPI.OrderSlot.OrderSlotTime,
+                        SlotGroup = orderAPI.OrderSlot.SlotGroup
+                    };
+                }
+
+                if(orderAPI.OrderedItems != null)
+                {
+                    foreach (var item in orderAPI.OrderedItems)
+                    {
+                        resultOrder.OrderedItems.Add(new OrderedItem
+                        {
+                            HasBeenConfigured = false,
+                            Quantity = item.Quantity,
+                            SelectedHotNotCold = item.SelectedHotNotCold,
+                            SelectedMeatId = item.SelectedMeatId,
+                            SelectedSalt = item.SelectedSalt,
+                            SelectedSauceId = item.SelectedSauceId,
+                            SelectedSize = item.SelectedSize
+                        });
+                    }
+                }
+
+                return resultOrder;
             }
             catch (HttpRequestException e)
             {
@@ -220,42 +257,70 @@ namespace AlphaMobile.Controllers.API
             }
         }
 
-        public async Task<bool> AddItemToCustomerOrder(OrderedItemAPIModel OrderedItem)
+        public async Task<bool> AddItemToCustomerOrder(OrderedItem OrderedItem)
         {
-            string requestURI = AppConfiguration.APIServer_URI + "/AddItemToCutomerOrder/";
-            _Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", app.OAuth_Token);
-            HttpRequestMessage message = new HttpRequestMessage();
+            string requestURI = AppConfiguration.APIServer_URI + "/AddItemToCustomerOrder";
+            //_Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", app.OAuth_Token);            
 
-            string json = JsonConvert.SerializeObject(OrderedItem);
-            var content = new StringContent(json, Encoding.UTF8,"application/json");
-            try
+            //string json = JsonConvert.SerializeObject(OrderedItem);
+            //var content = new StringContent(json, Encoding.UTF8,"application/json");
+            //try
+            //{
+            //    var response = await _Client.PostAsync(requestURI, content);
+            //    var resposneString = await response.Content.ReadAsStringAsync();
+            //    return true;
+            //}
+            //catch(Exception e)
+            //{
+            //    return false;
+            //}
+            HttpResponseMessage response = null;
+            using (var client = new HttpClient())
             {
-                var response = await _Client.PostAsync(requestURI, content);
-                var resposneString = await response.Content.ReadAsStringAsync();
-                return true;
+                using (var request = new HttpRequestMessage(HttpMethod.Post, requestURI))
+                {
+                    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", app.OAuth_Token);
+                    string content = JsonConvert.SerializeObject(new OrderedItemAPIModel {
+                        ItemId = OrderedItem.ItemId,
+                        Quantity = OrderedItem.Quantity,
+                        SelectedHotNotCold = OrderedItem.SelectedHotNotCold,
+                        SelectedMeatId = OrderedItem.SelectedMeatId,
+                        SelectedSalt = OrderedItem.SelectedSalt,
+                        SelectedSauceId = OrderedItem.SelectedSauceId,
+                        SelectedSize = OrderedItem.SelectedSize});
+
+                    //content = "{\"ItemId\":9,\"Quantity\":4,\"SelectedSize\":null,\"SelectedSalt\":false,\"SelectedHotNotCold\":false,\"SelectedMeatId\":null,\"SelectedSauceId\":null}"; // works
+                    //content = "{\"ItemId\":4,\"Quantity\":1,\"SelectedSize\":null,\"SelectedSalt\":false,\"SelectedHotNotCold\":false,\"SelectedMeatId\":null,\"SelectedSauceId\":null}";
+
+                    if (content != null)
+                    {
+                        request.Content = new StringContent(content, Encoding.UTF8, "application/json");
+                    }
+                    response = await client.SendAsync(request).ConfigureAwait(false);
+                    var responseString = await response.Content.ReadAsStringAsync();
+                }
             }
-            catch(Exception e)
-            {
-                return false;
-            }
+            return true;
         }
 
-        public async Task<List<OrderSlotAPI>> GetRestaurantSlotTime(int RestoId)
+        public async Task<List<OrderSlot>> GetRestaurantSlotTime(int RestoId)
         {
             string requestURI = AppConfiguration.APIServer_URI + "/SlotTime/" + RestoId.ToString();
             _Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", app.OAuth_Token);
             _Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            List<OrderSlotAPI> slotTiemAPI;
+
             try
             {
                 var content = await _Client.GetStringAsync(requestURI);
                 if (content == null)
                     return null;
-                List<OrderSlotAPI> slotTiemAPI = JsonConvert.DeserializeObject<List<OrderSlotAPI>>(content);
+                slotTiemAPI = JsonConvert.DeserializeObject<List<OrderSlotAPI>>(content);
                 if (slotTiemAPI == null)
                     return null;              
                 if (slotTiemAPI.Count == 0)
                     return null;
-                return slotTiemAPI;
             }
             catch (HttpRequestException e)
             {
@@ -277,7 +342,16 @@ namespace AlphaMobile.Controllers.API
                 return null;
             }
 
+            List<OrderSlot> orderSlotList = new List<OrderSlot>();
+            foreach(var item in slotTiemAPI)
+            {
+                orderSlotList.Add(new OrderSlot {
+                OrderSlotId = item.OrderSlotId,
+                OrderSlotTime = item.OrderSlotTime,
+                SlotGroup = item.SlotGroup});
+            }
 
+            return orderSlotList;
         }
 
         public async Task<bool> SetRestaurantSlotTime(int SlotId)

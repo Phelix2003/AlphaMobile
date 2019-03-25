@@ -64,11 +64,22 @@ namespace AlphaMobile.Views
                 // Error during the get of the restaurant.
                 await DisplayAlert("Erreur", "Impossible de charger le restaurant avec l'ID" + _restoId, "Ok");
             }
+            await ProcessTheItem();
         }
 
         
         private List<ItemGroup> GenerateItemGroupList(Restaurant resto)
-        {            
+        {        
+            if(app.order != null)
+            {
+                if(app.order.OrderedItems != null)
+                {
+                    foreach(var item in resto.Menu.ItemList)
+                    {
+                        item.UpdateDisplayOrderedQuanity(app.order.OrderedItems.ToList());
+                    }
+                }
+            }
             IEnumerable<Item> ListItem = resto.Menu.ItemList.Where(s => s.TypeOfFood == TypeOfFood.Frites).ToList();
             ItemGroup groupeFrites = new ItemGroup("Frites", "F");
             groupeFrites.AddRange(ListItem);
@@ -99,80 +110,110 @@ namespace AlphaMobile.Views
                     };
         }
 
-        private async void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        private async void ListView_ItemSelected(object sender, ItemTappedEventArgs e)
         {
-            var item = e.SelectedItem as Item;
-            await ProcessTheItem(item);
+            //var item = e.SelectedItem as Item;
+            var item = e.Item as Item;
+            app.orderedItem = new OrderedItem { Item = item };
+            await ProcessTheItem();
+            ((ListView)sender).SelectedItem = null;
         }
 
-        private async Task ProcessTheItem(Item item)
+        private async Task ProcessTheItem()
         {
+            // State machine to process a new Item to be add in the order. 
             // This is to refresh the order in case of someone is also changing the order on the desktop version
             app.order = await _Cloud.GetCustomerOrderAsync();
-
-            if (app.order != null)
+            if(app.orderedItem != null)
             {
-                // Check if the order is already completed or not. 
-                if (app.order.IsOrderCompleted)
+                if (app.order != null)
                 {
-                    //Action to take if the order is already completed. 
-                    return;
-                }
-
-                // Check if the order has already been started
-                // 
-
-                if (app.order.OrderedItems != null)
-                {
-                    if (app.order.OrderedItems.Count() > 0)
+                    // Check if the order is already completed or not. 
+                    if (app.order.IsOrderCompleted)
                     {
-                        //Order has already been started before/
-                        // Check now if the restaurant used for this order is the same has
-                        // the one requested here. 
-                        if (app.order.OrderRestaurantId != _restoId)                        {
-                            // The resto used in the existing order is different from the one we 
-                            // want to use here.
+                        //Action to take if the order is already completed. 
+                        return;
+                    }
 
-                            // Some actions here.   
-                            return;
+                    // Check if the order has already been started
+                    // 
+
+                    if (app.order.OrderedItems != null)
+                    {
+                        if (app.order.OrderedItems.Count() > 0)
+                        {
+                            //Order has already been started before/
+                            // Check now if the restaurant used for this order is the same has
+                            // the one requested here. 
+                            if (app.order.OrderRestaurantId != _restoId)
+                            {
+                                // The resto used in the existing order is different from the one we 
+                                // want to use here.
+
+                                // Some actions here.   
+                                return;
+                            }
+                        }
+                    }
+
+                    // First Check is there is a slot time associated to this order.
+                    if (app.order.OrderSlot == null)
+                    {
+                        // Get the available slot tome for today. 
+                        await Navigation.PushAsync(new SlotTimeSelectionPage(app.resto.Id));
+                    }
+                    else
+                    {
+                        // Then check if this Item need to open the configuration page
+                        if (app.orderedItem.Item.CanBeHotNotCold == true ||
+                            app.orderedItem.Item.CanBeSalt == true ||
+                            app.orderedItem.Item.CanHaveMeat == true ||
+                            app.orderedItem.Item.CanHaveSauce == true ||
+                            app.orderedItem.Item.HasSize == true)
+                        {
+                            if (!app.orderedItem.HasBeenConfigured)
+                            {
+                                await Navigation.PushAsync(new ItemConfigurationPage(app.orderedItem));
+                            }
+                            else
+                            {
+                                // Add Item in the cloud 
+                                bool response = await _Cloud.AddItemToCustomerOrder(new OrderedItem
+                                {
+                                    ItemId = app.orderedItem.Item.ItemId,
+                                    Quantity = 1,
+                                    SelectedHotNotCold = app.orderedItem.SelectedHotNotCold,
+                                    SelectedMeatId = app.orderedItem.SelectedMeatId,
+                                    SelectedSalt = app.orderedItem.SelectedSalt,
+                                    SelectedSauceId = app.orderedItem.SelectedSauceId,
+                                    SelectedSize = app.orderedItem.SelectedSize
+                                });
+                                app.orderedItem = null;
+                            }
+                        }
+                        else
+                        {                               
+                            // Add Item in the cloud 
+                            bool response = await _Cloud.AddItemToCustomerOrder(new OrderedItem
+                            {
+                                ItemId = app.orderedItem.Item.ItemId,
+                                Quantity = 1,
+                                SelectedHotNotCold = app.orderedItem.SelectedHotNotCold,
+                                SelectedMeatId = app.orderedItem.SelectedMeatId,
+                                SelectedSalt = app.orderedItem.SelectedSalt,
+                                SelectedSauceId = app.orderedItem.SelectedSauceId,
+                                SelectedSize = app.orderedItem.SelectedSize
+                            });
                         }
                     }
                 }
-
-                // Check is there is a slot time associated to this order.
-                if (app.order.OrderSlot == null)
-                {
-                    // Get the available slot tome for today. 
-                    await Navigation.PushAsync(new SlotTimeSelectionPage(app.resto.Id));
-                }
                 else
                 {
-                    if(app.resto != null)
-                    {
-                        await Navigation.PushAsync(new ItemConfigurationPage(new OrderedItem { Item = item }));
-                    }
-
+                    // Could not get the order.
+                    // Error No order for this user. 
+                    await Navigation.PopAsync();
                 }
-
-                bool response = await _Cloud.AddItemToCustomerOrder(new OrderedItemAPIModel
-                {
-                    ItemId = item.ItemId,
-                    Quantity = 1,
-                    SelectedHotNotCold = true,
-                    SelectedMeatId = null,
-                    SelectedSalt = true,
-                    SelectedSauceId = null,
-                    SelectedSize = MealSize.L
-                });
-
             }
-            else
-            {
-                // Could not get the order.
-                // Error No order for this user. 
-                await Navigation.PopAsync();
-            }
-
         }
     }
 }

@@ -20,7 +20,7 @@ namespace AlphaMobile.Views
         private int _restoId;
         App app = Application.Current as App;
 
-        private List<OrderSlotAPI> _slotTimeAPI;
+        private List<OrderSlot> _slotTime;
         private List<PossibleSlotTimeViewModel> _slotTimeViewModel = new List<PossibleSlotTimeViewModel>();
         private TimeSpan timeBetweenTwoButtons = new TimeSpan(0, 30, 0); // TODO : to add this in configuration
 
@@ -36,11 +36,11 @@ namespace AlphaMobile.Views
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            _slotTimeAPI = await _Cloud.GetRestaurantSlotTime(_restoId);
+            _slotTime = await _Cloud.GetRestaurantSlotTime(_restoId);
 
 
 
-            if (_slotTimeAPI == null)
+            if (_slotTime == null)
             {
                 await DisplayAlert("Complet", "Il n'y plus de desiponnibilité dans ce restaurant aujourd'hui", "Ok");
             }
@@ -48,7 +48,7 @@ namespace AlphaMobile.Views
             {
                 // Creates the view to select the slot. 
                 // Convert all available slot time in group of buttons
-                foreach(var item in _slotTimeAPI)
+                foreach(var item in _slotTime)
                 {
                     DateTime roundedTime = RoundDown(item.OrderSlotTime, timeBetweenTwoButtons);
                     if(_slotTimeViewModel.Count(r => r.TimeFrom == roundedTime) == 0)
@@ -236,7 +236,7 @@ namespace AlphaMobile.Views
             //Retreive the time preiode expected bhind the button
             var seletedSlot = _slotTimeViewModel.FirstOrDefault(r => r.ButtonId == button.Id.ToString());
             // Retreive the first slotime available in this time prediode
-            var expectedSlotTiem = _slotTimeAPI
+            var expectedSlotTiem = _slotTime
                 .Where(r => r.OrderSlotTime.CompareTo(seletedSlot.TimeFrom) >= 0)                            
                 .Where(r => r.OrderSlotTime.CompareTo(DateTime.Now) >= 0)                          
                 .Where(r => r.OrderSlotTime.CompareTo(seletedSlot.TimeTo) <= 0)
