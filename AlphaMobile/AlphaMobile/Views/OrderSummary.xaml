@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="AlphaMobile.Views.RestaurantDetailsView">
+             x:Class="AlphaMobile.Views.OrderSummary">
     <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
         <Label x:Name="RestoName" Text="" FontSize="21" />
         <Image x:Name="RestoImage"/>
-        <Button Text="Finaliser votre commande" HorizontalOptions="Fill" HeightRequest="60" Clicked="Button_Clicked"/>
+        <Button Text="Confirmer et Payer votre commande" HorizontalOptions="Fill" HeightRequest="60" Clicked="Button_Clicked"/>
         <ListView x:Name="listView"
-                  ItemTapped="ListView_ItemSelected"
+                  ItemTapped="ListView_ItemTapped"
                   IsGroupingEnabled="True"
                   GroupDisplayBinding="{Binding Title}"
                   HasUnevenRows="True"
@@ -22,11 +22,11 @@
                                 <Label Text="{Binding Description}" FontSize="Medium" TextColor="Gray" />
                             </StackLayout>
                             <ListView x:Name="PriceList" ItemsSource="{Binding Price}" HeightRequest="40" WidthRequest="100"/>
-                        </StackLayout>                        
+                        </StackLayout>
                     </ViewCell>
                     <!--<ImageCell Text="{Binding Name}" Detail="{Binding Description}" ImageSource="{Binding ImageSource}"/>-->
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-    </StackLayout>    
+    </StackLayout>
 </ContentPage>
